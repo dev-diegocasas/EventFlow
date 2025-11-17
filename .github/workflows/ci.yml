@@ -3,7 +3,6 @@ name: Taller CI Pipeline
 on:
   push:
     branches: ["main"]
-    # solo ejecutarlo cuando cambie index.html o el propio workflow
     paths:
       - "index.html"
       - ".github/workflows/**"
