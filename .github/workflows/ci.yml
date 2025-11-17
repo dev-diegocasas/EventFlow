@@ -2,7 +2,8 @@ name: Taller CI Pipeline
 
 on:
   push:
-    branches: ["main"]
+    branches:
+      - main
     paths:
       - "index.html"
       - ".github/workflows/**"
@@ -34,13 +35,19 @@ jobs:
       - name: 4) Lint/Check: buscar la palabra 'Rock'
         run: |
           echo "Buscando 'Rock' en index.html..."
-          grep -n "Rock" index.html
+          if ! grep -n "Rock" index.html; then
+            echo "ERROR: 'Rock' no encontrado."
+            exit 1
+          fi
           echo "'Rock' encontrado."
 
       - name: 5) Unit/Check: buscar 'EventFlow'
         run: |
           echo "Buscando 'EventFlow' en index.html..."
-          grep -n "EventFlow" index.html
+          if ! grep -n "EventFlow" index.html; then
+            echo "ERROR: 'EventFlow' no encontrado."
+            exit 1
+          fi
           echo "'EventFlow' encontrado."
 
       - name: 6) Resultado
