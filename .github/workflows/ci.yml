@@ -1,52 +1,48 @@
-# Archivo: .github/workflows/ci.yml
-
-name: Taller CI Pipeline # Nombre del pipeline
+name: Taller CI Pipeline
 
 on:
-  push: # Se activa con CADA push (commit)
-    branches: [ "main" ] # Solo en la rama principal
-  workflow_dispatch: # Permite iniciarlo manualmente
+  push:
+    branches: ["main"]
+    # solo ejecutarlo cuando cambie index.html o el propio workflow
+    paths:
+      - "index.html"
+      - ".github/workflows/**"
+  workflow_dispatch:
 
 jobs:
-  # 1. El trabajo de "Construcción" (Build)
-  build:
-    runs-on: ubuntu-latest # Se ejecuta en una máquina virtual de Linux
-
-    steps:
-      - name: 1. Checkout del código
-        uses: actions/checkout@v4 # Acción oficial para descargar el código del repo
-
-      - name: 2. Simular una construcción (Build)
-        run: echo "Construyendo el proyecto... (aquí iría 'npm run build', etc.)"
-
-      - name: 3. Simular guardado de artefacto
-        run: |
-          mkdir -p build
-          cp index.html build/
-          echo "Archivos 'construidos' movidos a la carpeta /build"
-
-  # 2. El trabajo de "Pruebas" (Test)
   test:
-    needs: build # Este trabajo NO empieza hasta que 'build' termine
     runs-on: ubuntu-latest
 
     steps:
-      - name: 1. Checkout del código
+      - name: 1) Checkout del código
         uses: actions/checkout@v4
 
-      - name: 2. Simular pruebas (Linting)
+      - name: 2) Verificar que index.html exista
         run: |
-          echo "Ejecutando pruebas..."
-          # Simulación de una prueba que busca la palabra "Rock"
-          grep -q "Rock" index.html
-          echo "Prueba de 'Linting' pasada."
+          if [ ! -f index.html ]; then
+            echo "ERROR: index.html no se encontró en la raíz del repo."
+            ls -la
+            exit 1
+          fi
+          echo "index.html encontrado."
 
-      - name: 3. Simular pruebas de unidad (Unit Test)
+      - name: 3) Mostrar contenido de index.html (para debug)
         run: |
-          echo "Ejecutando pruebas de unidad..."
-          # Simulación de una prueba que busca el copyright
-          grep -q "EventFlow" index.html
-          echo "Prueba de 'Copyright' pasada."
-          
-      - name: 4. ¡Despliegue simulado!
-        run: echo "¡Pruebas exitosas! Listo para desplegar."
+          echo "---- inicio index.html ----"
+          sed -n '1,200p' index.html || true
+          echo "---- fin index.html ----"
+
+      - name: 4) Lint/Check: buscar la palabra 'Rock'
+        run: |
+          echo "Buscando 'Rock' en index.html..."
+          grep -n "Rock" index.html
+          echo "'Rock' encontrado."
+
+      - name: 5) Unit/Check: buscar 'EventFlow'
+        run: |
+          echo "Buscando 'EventFlow' en index.html..."
+          grep -n "EventFlow" index.html
+          echo "'EventFlow' encontrado."
+
+      - name: 6) Resultado
+        run: echo "Todas las comprobaciones pasaron ✅"
