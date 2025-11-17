@@ -41,7 +41,7 @@ jobs:
           fi
           echo "'Rock' encontrado."
 
-      - name: 5) Unit/Check: buscar 'EventFlow'
+      - name: 5) UnitCheck: buscar 'EventFlow'
         run: |
           echo "Buscando 'EventFlow' en index.html..."
           if ! grep -n "EventFlow" index.html; then
